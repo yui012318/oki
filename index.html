@@ -307,7 +307,6 @@
       border-radius: 6px;
       background: var(--primary-light);
       color: var(--primary);
-      margin-bottom: 6px;
     }
     .info-row {
       display: flex;
@@ -359,7 +358,7 @@
       font-weight: 700;
     }
 
-    /* Edit Modal */
+    /* Modals */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -502,18 +501,18 @@
     </div>
   </section>
 
-  <!-- TAB 3: 重要資料（可自行新增、複製、開啟地圖） -->
+  <!-- TAB 3: 重要資料（可新增、編輯、刪除、複製、開啟地圖） -->
   <section id="tab-info" class="tab-panel">
     <div class="card">
       <div class="section-title">新增重要資料（航班、住宿、憑證）</div>
       <div class="input-row">
         <div class="field">
           <label>分類標籤</label>
-          <input type="text" id="infoTag" placeholder="例如：航班、住宿、預約" />
+          <input type="text" id="infoTag" placeholder="例如：航班、住宿、店家" />
         </div>
         <div class="field">
           <label>標題 *</label>
-          <input type="text" id="infoTitle" placeholder="例如：星宇 JX870 / 飯店名" />
+          <input type="text" id="infoTitle" placeholder="輸入標題" />
         </div>
       </div>
       <div class="field" style="margin-bottom:8px;">
@@ -530,7 +529,7 @@
     <div id="infoList"></div>
   </section>
 
-  <!-- TAB 4: 行程與想去店家 -->
+  <!-- TAB 4: 行程與想去店家（可新增、編輯、刪除、打勾） -->
   <section id="tab-places" class="tab-panel">
     <div class="card">
       <div class="section-title">新增想去的店家 / 景點</div>
@@ -600,18 +599,18 @@
   </section>
 </main>
 
-<!-- 編輯消費紀錄 Modal -->
-<div class="modal-backdrop" id="editModal">
+<!-- 1. 編輯消費紀錄 Modal -->
+<div class="modal-backdrop" id="editExpenseModal">
   <div class="modal-box">
     <div class="section-title">
       <span>編輯消費紀錄</span>
-      <button type="button" class="icon-btn" onclick="closeEditModal()">✕ 關閉</button>
+      <button type="button" class="icon-btn" onclick="closeModal('editExpenseModal')">✕ 關閉</button>
     </div>
-    <input type="hidden" id="editId" />
+    <input type="hidden" id="editExpId" />
     <div class="input-row">
       <div class="field">
         <label>歸屬天數</label>
-        <select id="editDay">
+        <select id="editExpDay">
           <option value="Day 1">Day 1</option>
           <option value="Day 2">Day 2</option>
           <option value="Day 3">Day 3</option>
@@ -620,7 +619,7 @@
       </div>
       <div class="field">
         <label>支付方式</label>
-        <select id="editPay">
+        <select id="editExpPay">
           <option value="jihe">吉鶴卡</option>
           <option value="dbs">星展卡</option>
           <option value="dawho">永豐大戶</option>
@@ -632,24 +631,96 @@
     <div class="input-row">
       <div class="field">
         <label>日幣金額 (JPY)</label>
-        <input type="number" id="editJpy" inputmode="decimal" min="0" />
+        <input type="number" id="editExpJpy" inputmode="decimal" min="0" />
       </div>
       <div class="field">
         <label>台幣金額 (TWD)</label>
-        <input type="number" id="editTwd" inputmode="decimal" min="0" />
+        <input type="number" id="editExpTwd" inputmode="decimal" min="0" />
       </div>
     </div>
     <div class="field" style="margin-bottom:8px;">
       <label>備註</label>
-      <input type="text" id="editNote" />
+      <input type="text" id="editExpNote" />
     </div>
     <div style="display:flex;gap:12px;margin-bottom:12px;font-size:12px;">
-      <label><input type="checkbox" id="editAp" /> 吉鶴 Apple Pay (+1.5%)</label>
-      <label><input type="checkbox" id="editHot" /> 吉鶴 熱門/超商 (+3%)</label>
+      <label><input type="checkbox" id="editExpAp" /> 吉鶴 Apple Pay (+1.5%)</label>
+      <label><input type="checkbox" id="editExpHot" /> 吉鶴 熱門/超商 (+3%)</label>
     </div>
     <div style="display:flex;gap:8px;">
-      <button type="button" class="btn-secondary" style="flex:1;" onclick="closeEditModal()">取消</button>
+      <button type="button" class="btn-secondary" style="flex:1;" onclick="closeModal('editExpenseModal')">取消</button>
       <button type="button" class="btn-primary" style="flex:2;" onclick="saveEditExpense()">儲存修改</button>
+    </div>
+  </div>
+</div>
+
+<!-- 2. 編輯重要資料 Modal -->
+<div class="modal-backdrop" id="editInfoModal">
+  <div class="modal-box">
+    <div class="section-title">
+      <span>編輯重要資料</span>
+      <button type="button" class="icon-btn" onclick="closeModal('editInfoModal')">✕ 關閉</button>
+    </div>
+    <input type="hidden" id="editInfoId" />
+    <div class="input-row">
+      <div class="field">
+        <label>分類標籤</label>
+        <input type="text" id="editInfoTag" />
+      </div>
+      <div class="field">
+        <label>標題 *</label>
+        <input type="text" id="editInfoTitle" />
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:8px;">
+      <label>詳細內容</label>
+      <textarea id="editInfoBody"></textarea>
+    </div>
+    <div class="field" style="margin-bottom:12px;">
+      <label>Google Maps 或相關連結</label>
+      <input type="text" id="editInfoMap" placeholder="貼上網址或地址（留空則移除連結）" />
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button type="button" class="btn-secondary" style="flex:1;" onclick="closeModal('editInfoModal')">取消</button>
+      <button type="button" class="btn-primary" style="flex:2;" onclick="saveEditInfo()">儲存修改</button>
+    </div>
+  </div>
+</div>
+
+<!-- 3. 編輯行程店家 Modal -->
+<div class="modal-backdrop" id="editPlaceModal">
+  <div class="modal-box">
+    <div class="section-title">
+      <span>編輯行程 / 店家</span>
+      <button type="button" class="icon-btn" onclick="closeModal('editPlaceModal')">✕ 關閉</button>
+    </div>
+    <input type="hidden" id="editPlaceId" />
+    <div class="input-row">
+      <div class="field">
+        <label>日期分類</label>
+        <select id="editPlaceDay">
+          <option value="Day 1">Day 1 (11/28 六)</option>
+          <option value="Day 2">Day 2 (11/29 日)</option>
+          <option value="Day 3">Day 3 (11/30 一)</option>
+          <option value="Day 4">Day 4 (12/01 二)</option>
+          <option value="想去清單">想去清單</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>店家或地點名稱 *</label>
+        <input type="text" id="editPlaceName" />
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:8px;">
+      <label>Google Maps 網址或地址（留空自動用名稱搜尋）</label>
+      <input type="text" id="editPlaceMap" />
+    </div>
+    <div class="field" style="margin-bottom:12px;">
+      <label>備註</label>
+      <input type="text" id="editPlaceNote" />
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button type="button" class="btn-secondary" style="flex:1;" onclick="closeModal('editPlaceModal')">取消</button>
+      <button type="button" class="btn-primary" style="flex:2;" onclick="saveEditPlace()">儲存修改</button>
     </div>
   </div>
 </div>
@@ -673,7 +744,7 @@
 </nav>
 
 <script>
-  const STORAGE_KEY = 'okinawa_trip_2026_v4';
+  const STORAGE_KEY = 'okinawa_trip_2026_v5';
   const JIHE_BONUS_CAP = 600;
 
   let state = loadState();
@@ -709,6 +780,21 @@
 
   function saveState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+  }
+
+  function buildMapUrl(raw, fallbackQuery) {
+    const val = (raw || '').trim();
+    if (!val) {
+      return fallbackQuery
+        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fallbackQuery)}`
+        : '';
+    }
+    if (val.startsWith('http://') || val.startsWith('https://')) return val;
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(val)}`;
   }
 
   function switchTab(tabId, btn) {
@@ -884,44 +970,40 @@
     renderAll();
   }
 
-  function openEditModal(id) {
+  function openEditExpense(id) {
     const tx = state.expenses.find(x => x.id === id);
     if (!tx) return;
-    document.getElementById('editId').value = tx.id;
-    document.getElementById('editDay').value = tx.day || 'Day 1';
-    document.getElementById('editPay').value = tx.pay;
-    document.getElementById('editJpy').value = tx.jpy;
-    document.getElementById('editTwd').value = tx.twd;
-    document.getElementById('editNote').value = tx.note || '';
-    document.getElementById('editAp').checked = !!tx.applePay;
-    document.getElementById('editHot').checked = !!tx.hotStore;
-    document.getElementById('editModal').classList.add('open');
-  }
-
-  function closeEditModal() {
-    document.getElementById('editModal').classList.remove('open');
+    document.getElementById('editExpId').value = tx.id;
+    document.getElementById('editExpDay').value = tx.day || 'Day 1';
+    document.getElementById('editExpPay').value = tx.pay;
+    document.getElementById('editExpJpy').value = tx.jpy;
+    document.getElementById('editExpTwd').value = tx.twd;
+    document.getElementById('editExpNote').value = tx.note || '';
+    document.getElementById('editExpAp').checked = !!tx.applePay;
+    document.getElementById('editExpHot').checked = !!tx.hotStore;
+    document.getElementById('editExpenseModal').classList.add('open');
   }
 
   function saveEditExpense() {
-    const id = document.getElementById('editId').value;
+    const id = document.getElementById('editExpId').value;
     const tx = state.expenses.find(x => x.id === id);
     if (!tx) return;
 
-    const jpyIn = parseAmountInput(document.getElementById('editJpy').value);
-    const twdIn = parseAmountInput(document.getElementById('editTwd').value);
+    const jpyIn = parseAmountInput(document.getElementById('editExpJpy').value);
+    const twdIn = parseAmountInput(document.getElementById('editExpTwd').value);
     const { jpy, twd, rate } = resolvePair(jpyIn, twdIn, state.baseRate);
 
-    tx.day = document.getElementById('editDay').value;
-    tx.pay = document.getElementById('editPay').value;
+    tx.day = document.getElementById('editExpDay').value;
+    tx.pay = document.getElementById('editExpPay').value;
     tx.jpy = jpy;
     tx.twd = twd;
     tx.rate = rate;
-    tx.note = document.getElementById('editNote').value.trim();
-    tx.applePay = tx.pay === 'jihe' ? document.getElementById('editAp').checked : false;
-    tx.hotStore = tx.pay === 'jihe' ? document.getElementById('editHot').checked : false;
+    tx.note = document.getElementById('editExpNote').value.trim();
+    tx.applePay = tx.pay === 'jihe' ? document.getElementById('editExpAp').checked : false;
+    tx.hotStore = tx.pay === 'jihe' ? document.getElementById('editExpHot').checked : false;
 
     saveState();
-    closeEditModal();
+    closeModal('editExpenseModal');
     renderAll();
   }
 
@@ -1070,7 +1152,7 @@
             <div class="tx-twd">NT$ ${tx.twd.toLocaleString()}</div>
             ${rew > 0 ? `<div class="tx-rew">+回饋 $${rew}</div>` : ''}
           </div>
-          <button type="button" class="icon-btn" onclick="openEditModal('${tx.id}')">編輯</button>
+          <button type="button" class="icon-btn" onclick="openEditExpense('${tx.id}')">編輯</button>
           <button type="button" class="icon-btn del-btn" onclick="deleteExpense('${tx.id}')">✕</button>
         </div>
       `;
@@ -1085,19 +1167,41 @@
     const mapRaw = document.getElementById('infoMap').value.trim();
     if (!title) { alert('請輸入標題'); return; }
 
-    let mapUrl = '';
-    if (mapRaw) {
-      mapUrl = (mapRaw.startsWith('http://') || mapRaw.startsWith('https://'))
-        ? mapRaw
-        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapRaw)}`;
-    }
-
+    const mapUrl = buildMapUrl(mapRaw, '');
     state.infos.push({ id: 'i_' + Date.now(), tag, title, body, map: mapUrl });
     saveState();
     document.getElementById('infoTag').value = '';
     document.getElementById('infoTitle').value = '';
     document.getElementById('infoBody').value = '';
     document.getElementById('infoMap').value = '';
+    renderInfos();
+  }
+
+  function openEditInfo(id) {
+    const it = state.infos.find(x => x.id === id);
+    if (!it) return;
+    document.getElementById('editInfoId').value = it.id;
+    document.getElementById('editInfoTag').value = it.tag || '';
+    document.getElementById('editInfoTitle').value = it.title || '';
+    document.getElementById('editInfoBody').value = it.body || '';
+    document.getElementById('editInfoMap').value = it.map || '';
+    document.getElementById('editInfoModal').classList.add('open');
+  }
+
+  function saveEditInfo() {
+    const id = document.getElementById('editInfoId').value;
+    const it = state.infos.find(x => x.id === id);
+    if (!it) return;
+    const title = document.getElementById('editInfoTitle').value.trim();
+    if (!title) { alert('標題不能為空'); return; }
+
+    it.tag = document.getElementById('editInfoTag').value.trim() || '重要資料';
+    it.title = title;
+    it.body = document.getElementById('editInfoBody').value.trim();
+    it.map = buildMapUrl(document.getElementById('editInfoMap').value, '');
+
+    saveState();
+    closeModal('editInfoModal');
     renderInfos();
   }
 
@@ -1117,9 +1221,12 @@
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;">
           <span class="badge">${it.tag}</span>
-          <button type="button" class="icon-btn del-btn" onclick="deleteInfoItem('${it.id}')">✕</button>
+          <div>
+            <button type="button" class="icon-btn" onclick="openEditInfo('${it.id}')">編輯</button>
+            <button type="button" class="icon-btn del-btn" onclick="deleteInfoItem('${it.id}')">✕</button>
+          </div>
         </div>
-        <div style="font-size:16px;font-weight:700;">${it.title}</div>
+        <div style="font-size:16px;font-weight:700;margin-top:6px;">${it.title}</div>
         ${it.body ? `<div style="font-size:13px;color:var(--text);margin-top:6px;white-space:pre-line;">${it.body}</div>` : ''}
         <div class="info-row">
           <button type="button" class="mini-btn" onclick="copyText(${JSON.stringify(it.title + (it.body ? '\n' + it.body : ''))})">📋 複製內容</button>
@@ -1137,18 +1244,40 @@
     const note = document.getElementById('placeNote').value.trim();
     if (!name) { alert('請輸入店家或地點名稱'); return; }
 
-    let mapUrl = '';
-    if (mapInput.startsWith('http://') || mapInput.startsWith('https://')) {
-      mapUrl = mapInput;
-    } else {
-      mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapInput || ('沖繩 ' + name))}`;
-    }
-
+    const mapUrl = buildMapUrl(mapInput, '沖繩 ' + name);
     state.places.push({ id: 'p_' + Date.now(), day, name, map: mapUrl, note, done: false });
     saveState();
     document.getElementById('placeName').value = '';
     document.getElementById('placeMap').value = '';
     document.getElementById('placeNote').value = '';
+    renderPlaces();
+  }
+
+  function openEditPlace(id) {
+    const p = state.places.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('editPlaceId').value = p.id;
+    document.getElementById('editPlaceDay').value = p.day || '想去清單';
+    document.getElementById('editPlaceName').value = p.name || '';
+    document.getElementById('editPlaceMap').value = p.map || '';
+    document.getElementById('editPlaceNote').value = p.note || '';
+    document.getElementById('editPlaceModal').classList.add('open');
+  }
+
+  function saveEditPlace() {
+    const id = document.getElementById('editPlaceId').value;
+    const p = state.places.find(x => x.id === id);
+    if (!p) return;
+    const name = document.getElementById('editPlaceName').value.trim();
+    if (!name) { alert('名稱不能為空'); return; }
+
+    p.day = document.getElementById('editPlaceDay').value;
+    p.name = name;
+    p.map = buildMapUrl(document.getElementById('editPlaceMap').value, '沖繩 ' + name);
+    p.note = document.getElementById('editPlaceNote').value.trim();
+
+    saveState();
+    closeModal('editPlaceModal');
     renderPlaces();
   }
 
@@ -1188,6 +1317,7 @@
             <a class="mini-btn" href="${p.map}" target="_blank">📍 開啟 Google Maps</a>
           </div>
         </div>
+        <button type="button" class="icon-btn" onclick="openEditPlace('${p.id}')">編輯</button>
         <button type="button" class="icon-btn del-btn" onclick="deletePlace('${p.id}')">✕</button>
       </div>
     `).join('');
