@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="沖繩旅帳" />
+  <title>沖繩四日旅帳與隨身手冊</title>
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --primary: #2b6cb0;
+      --primary-light: #ebf4ff;
+      --text: #1a202c;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Noto Sans TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: calc(84px + env(safe-area-inset-bottom));
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: calc(12px + env(safe-area-inset-top)) 16px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 { margin: 0; font-size: 17px; font-weight: 700; }
+    .rate-pill {
+      font-size: 12px;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+    }
+    main { max-width: 540px; margin: 0 auto; padding: 14px; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      margin: 0 0 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Payment Pills */
+    .pay-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .pay-btn {
+      padding: 11px 6px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .pay-btn span {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .pay-btn.active {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+    .pay-btn.active span { color: var(--primary); }
+
+    .sub-toggles {
+      display: none;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .sub-toggles.show { display: flex; }
+    .toggle-chip {
+      flex: 1;
+      min-width: 130px;
+      padding: 9px 10px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: #f8fafc;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      text-align: center;
+    }
+    .toggle-chip.active {
+      border-color: var(--success);
+      background: #f0fdf4;
+      color: var(--success);
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .field input, .field select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      background: #fff;
+      color: var(--text);
+    }
+    .field input:focus, .field select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    .live-preview {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: var(--text);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .btn-primary {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-secondary {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #f8fafc;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Card Quota Bars */
+    .quota-item {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .quota-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .quota-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      gap: 8px;
+    }
+    .quota-sub {
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .bar-bg {
+      height: 7px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 999px;
+      transition: width 0.25s;
+    }
+    .bar-fill.warn { background: var(--warning); }
+    .bar-fill.full { background: var(--danger); }
+
+    /* Day Summary Pills */
+    .day-pills {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      margin-bottom: 12px;
+      padding-bottom: 2px;
+    }
+    .day-pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .day-pill.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .summary-banner {
+      background: var(--primary-light);
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .summary-big { font-size: 20px; font-weight: 800; color: var(--primary); }
+    .summary-sub { font-size: 12px; color: var(--muted); text-align: right; }
+
+    /* Expense List */
+    .tx-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 8px;
+    }
+    .tx-item:last-child { border-bottom: none; }
+    .tx-main { flex: 1; min-width: 0; }
+    .tx-title { font-size: 14px; font-weight: 600; }
+    .tx-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .tx-right { text-align: right; }
+    .tx-twd { font-size: 14px; font-weight: 700; }
+    .tx-rew { font-size: 11px; color: var(--success); font-weight: 600; }
+    .icon-btn {
+      background: none;
+      border: none;
+      color: #64748b;
+      font-size: 13px;
+      padding: 4px 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .del-btn { color: #94a3b8; font-size: 15px; }
+
+    /* Info / Places / Coupons */
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--primary-light);
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+      flex-wrap: wrap;
+    }
+    .mini-btn {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .place-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+    .place-card.done { opacity: 0.55; }
+    .place-check { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--primary); }
+    .coupon-btn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px;
+      background: #fff;
+      border: 1.5px solid var(--primary);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    /* Edit Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 460px;
+      padding: 16px;
+      max-height: 88vh;
+      overflow-y: auto;
+    }
+
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      padding: 8px 2px calc(8px + env(safe-area-inset-bottom));
+      z-index: 30;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .nav-btn.active { color: var(--primary); }
+    .nav-icon { font-size: 17px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🇯🇵 沖繩旅帳 11/28–12/1</h1>
+  <button class="rate-pill" onclick="changeBaseRate()" id="baseRateBtn">基準匯率 0.215</button>
+</header>
+
+<main>
+  <!-- TAB 1: 記帳＋卡片累積與剩餘額度 -->
+  <section id="tab-expense" class="tab-panel active">
+    <div class="card">
+      <div class="section-title">1. 記帳與支付選擇</div>
+
+      <div class="input-row">
+        <div class="field">
+          <label>歸屬天數</label>
+          <select id="inputDay">
+            <option value="Day 1">Day 1 (11/28 六)</option>
+            <option value="Day 2">Day 2 (11/29 日)</option>
+            <option value="Day 3">Day 3 (11/30 一)</option>
+            <option value="Day 4">Day 4 (12/01 二)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>消費備註（選填）</label>
+          <input type="text" id="inputNote" placeholder="例如：牛角、0元贈品" />
+        </div>
+      </div>
+
+      <div class="pay-grid" id="payGrid">
+        <button type="button" class="pay-btn active" data-pay="jihe" onclick="selectPay('jihe')">吉鶴卡<span>2.5%+加碼</span></button>
+        <button type="button" class="pay-btn" data-pay="dbs" onclick="selectPay('dbs')">星展卡<span>5% (上限600)</span></button>
+        <button type="button" class="pay-btn" data-pay="dawho" onclick="selectPay('dawho')">永豐大戶<span>4.5% (餘1.25萬)</span></button>
+        <button type="button" class="pay-btn" data-pay="taishin" onclick="selectPay('taishin')">台新太陽<span>3.3% 無上限</span></button>
+        <button type="button" class="pay-btn" data-pay="cash" onclick="selectPay('cash')">現金<span>日幣現鈔</span></button>
+      </div>
+
+      <div class="sub-toggles show" id="jiheToggles">
+        <button type="button" class="toggle-chip active" id="toggleApplePay" onclick="toggleJiheOpt('applePay')">✓ Apple Pay (+1.5%)</button>
+        <button type="button" class="toggle-chip" id="toggleHotStore" onclick="toggleJiheOpt('hotStore')">+ 熱門/超商 (+3%)</button>
+      </div>
+
+      <div class="input-row">
+        <div class="field">
+          <label>日幣金額 (JPY，可填 0)</label>
+          <input type="number" id="inputJpy" inputmode="decimal" min="0" placeholder="可填 0 或金額" oninput="updateLivePreview()" />
+        </div>
+        <div class="field">
+          <label>台幣金額 (TWD，可填 0)</label>
+          <input type="number" id="inputTwd" inputmode="decimal" min="0" placeholder="可填 0 或台幣" oninput="updateLivePreview()" />
+        </div>
+      </div>
+
+      <div class="live-preview" id="livePreview">
+        <span>當筆匯率：<strong>-</strong></span>
+        <span>預估回饋：<strong>NT$ 0</strong></span>
+      </div>
+
+      <button type="button" class="btn-primary" onclick="addExpense()">＋ 記一筆（支援 0 元）</button>
+    </div>
+
+    <!-- 同一區：各卡累積與剩餘回饋額度 -->
+    <div class="card">
+      <div class="section-title">
+        <span>2. 各卡累積與剩餘回饋額度</span>
+        <button type="button" class="mini-btn" onclick="editDawhoOffset()">調整大戶已刷</button>
+      </div>
+      <div id="quotaList"></div>
+    </div>
+  </section>
+
+  <!-- TAB 2: 記帳紀錄（四天總計 + 分日切換 + 可編輯） -->
+  <section id="tab-records" class="tab-panel">
+    <div class="day-pills" id="recordDayPills">
+      <button type="button" class="day-pill active" onclick="selectRecordDay('ALL', this)">四天總計</button>
+      <button type="button" class="day-pill" onclick="selectRecordDay('Day 1', this)">Day 1 (11/28)</button>
+      <button type="button" class="day-pill" onclick="selectRecordDay('Day 2', this)">Day 2 (11/29)</button>
+      <button type="button" class="day-pill" onclick="selectRecordDay('Day 3', this)">Day 3 (11/30)</button>
+      <button type="button" class="day-pill" onclick="selectRecordDay('Day 4', this)">Day 4 (12/01)</button>
+    </div>
+
+    <div class="summary-banner" id="recordSummary"></div>
+
+    <div class="card">
+      <div class="section-title">
+        <span id="recordListTitle">全部消費明細</span>
+        <span id="recordCountLabel">0 筆</span>
+      </div>
+      <div id="txList"></div>
+    </div>
+  </section>
+
+  <!-- TAB 3: 重要資料 -->
+  <section id="tab-info" class="tab-panel">
+    <div class="card">
+      <span class="badge">去程航班｜Day 1（11/28 週六）</span>
+      <div style="font-size:16px;font-weight:700;">星宇航空 Starlux JX870（A350-900）</div>
+      <div style="font-size:14px;margin-top:6px;">
+        <strong>11:40</strong> 臺灣桃園機場 (TPE) <strong>第 1 航廈</strong><br/>
+        ↓ 飛行 1 小時 35 分（直飛）<br/>
+        <strong>14:15</strong> 那霸國際機場 (OKA) <strong>國際航廈</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="badge">回程航班｜Day 4（12/01 週二）</span>
+      <div style="font-size:16px;font-weight:700;">星宇航空 Starlux JX871（A350-900）</div>
+      <div style="font-size:14px;margin-top:6px;">
+        <strong>15:25</strong> 那霸國際機場 (OKA) <strong>國際航廈</strong><br/>
+        ↓ 飛行 1 小時 45 分（直飛）<br/>
+        <strong>16:10</strong> 臺灣桃園機場 (TPE) <strong>第 1 航廈</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="badge">晚餐訂位｜11/28（六）18:30</span>
+      <div style="font-size:16px;font-weight:700;">牛角 国際通り店（2 名様｜僅訂位）</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:4px;">
+        住所：沖縄県那覇市久茂地３丁目 ２－２３<br/>
+        電話：098-864-0141
+      </div>
+      <div class="info-row">
+        <button type="button" class="mini-btn" onclick="copyText('沖縄県那覇市久茂地３丁目２－２３')">📋 複製地址</button>
+       
+        <a class="mini-btn" href="https://www.google.com/maps/search/?api=1&query=沖縄県那覇市久茂地３丁目２－２３" target="_blank">📍 地圖</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="badge">住宿 1｜11/28（六）－ 11/29（日）1 晚</span>
+      <div style="font-size:15px;font-weight:700;">那霸歌町大和ROYNET酒店</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px;">Daiwa Roynet Hotel Naha Omoromachi</div>
+      <div class="info-row">
+        <button type="button" class="mini-btn" onclick="copyText('Daiwa Roynet Hotel Naha Omoromachi')">📋 複製英文名</button>
+        <a class="mini-btn" href="https://www.google.com/maps/search/?api=1&query=Daiwa+Roynet+Hotel+Naha+Omoromachi" target="_blank">📍 Google Maps</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="badge">住宿 2｜11/29（日）－ 12/01（二）2 晚</span>
+      <div style="font-size:15px;font-weight:700;">那霸歌町大和Roynet PREMIER酒店</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px;">Daiwa Roynet Hotel Naha-Omoromachi Premier</div>
+      <div class="info-row">
+        <button type="button" class="mini-btn" onclick="copyText('Daiwa Roynet Hotel Naha-Omoromachi Premier')">📋 複製英文名</button>
+        <a class="mini-btn" href="https://www.google.com/maps/search/?api=1&query=Daiwa+Roynet+Hotel+Naha+Omoromachi+Premier" target="_blank">📍 Google Maps</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 4: 行程與想去店家 -->
+  <section id="tab-places" class="tab-panel">
+    <div class="card">
+      <div class="section-title">新增想去的店家 / 景點</div>
+      <div class="input-row">
+        <div class="field">
+          <label>日期分類</label>
+          <select id="placeDay">
+            <option value="Day 1">Day 1 (11/28 六)</option>
+            <option value="Day 2">Day 2 (11/29 日)</option>
+            <option value="Day 3">Day 3 (11/30 一)</option>
+            <option value="Day 4">Day 4 (12/01 二)</option>
+            <option value="想去清單" selected>想去清單（未排日）</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>店家或地點名稱 *</label>
+          <input type="text" id="placeName" placeholder="輸入名稱" />
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:8px;">
+        <label>Google Maps 網址或地址（留空會自動用名稱搜尋）</label>
+        <input type="text" id="placeMap" placeholder="貼上 Google Maps 網址或地址" />
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>備註</label>
+        <input type="text" id="placeNote" placeholder="選填備註" />
+      </div>
+      <button type="button" class="btn-primary" onclick="addPlace()">＋ 加入店家清單</button>
+    </div>
+
+    <div class="day-pills" id="dayFilterPills">
+      <button type="button" class="day-pill active" onclick="filterPlaces('ALL', this)">全部</button>
+      <button type="button" class="day-pill" onclick="filterPlaces('Day 1', this)">Day 1</button>
+      <button type="button" class="day-pill" onclick="filterPlaces('Day 2', this)">Day 2</button>
+      <button type="button" class="day-pill" onclick="filterPlaces('Day 3', this)">Day 3</button>
+      <button type="button" class="day-pill" onclick="filterPlaces('Day 4', this)">Day 4</button>
+      <button type="button" class="day-pill" onclick="filterPlaces('想去清單', this)">想去清單</button>
+    </div>
+
+    <div id="placeList"></div>
+  </section>
+
+  <!-- TAB 5: 優惠券 -->
+  <section id="tab-coupons" class="tab-panel">
+    <div class="card">
+      <div class="section-title">新增優惠券網址</div>
+      <div class="field" style="margin-bottom:8px;">
+        <label>優惠券名稱 *</label>
+        <input type="text" id="couponName" placeholder="輸入優惠券名稱" />
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>優惠券網址 (URL) *</label>
+        <input type="url" id="couponUrl" placeholder="貼上 https://..." />
+      </div>
+      <button type="button" class="btn-primary" onclick="addCoupon()">＋ 新增優惠券</button>
+    </div>
+
+    <div id="couponList"></div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="section-title">資料備份</div>
+      <div style="display:flex;gap:8px;">
+        <button type="button" class="mini-btn" style="flex:1;justify-content:center;" onclick="exportBackup()">📤 複製全部備份碼</button>
+        <button type="button" class="mini-btn" style="flex:1;justify-content:center;" onclick="importBackup()">📥 匯入備份碼</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 編輯消費紀錄 Modal -->
+<div class="modal-backdrop" id="editModal">
+  <div class="modal-box">
+    <div class="section-title">
+      <span>編輯消費紀錄</span>
+      <button type="button" class="icon-btn" onclick="closeEditModal()">✕ 關閉</button>
+    </div>
+    <input type="hidden" id="editId" />
+    <div class="input-row">
+      <div class="field">
+        <label>歸屬天數</label>
+        <select id="editDay">
+          <option value="Day 1">Day 1</option>
+          <option value="Day 2">Day 2</option>
+          <option value="Day 3">Day 3</option>
+          <option value="Day 4">Day 4</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>支付方式</label>
+        <select id="editPay">
+          <option value="jihe">吉鶴卡</option>
+          <option value="dbs">星展卡</option>
+          <option value="dawho">永豐大戶</option>
+          <option value="taishin">台新太陽</option>
+          <option value="cash">現金</option>
+        </select>
+      </div>
+    </div>
+    <div class="input-row">
+      <div class="field">
+        <label>日幣金額 (JPY)</label>
+        <input type="number" id="editJpy" inputmode="decimal" min="0" />
+      </div>
+      <div class="field">
+        <label>台幣金額 (TWD)</label>
+        <input type="number" id="editTwd" inputmode="decimal" min="0" />
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:8px;">
+      <label>備註</label>
+      <input type="text" id="editNote" />
+    </div>
+    <div style="display:flex;gap:12px;margin-bottom:12px;font-size:12px;">
+      <label><input type="checkbox" id="editAp" /> 吉鶴 Apple Pay (+1.5%)</label>
+      <label><input type="checkbox" id="editHot" /> 吉鶴 熱門/超商 (+3%)</label>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button type="button" class="btn-secondary" style="flex:1;" onclick="closeEditModal()">取消</button>
+      <button type="button" class="btn-primary" style="flex:2;" onclick="saveEditExpense()">儲存修改</button>
+    </div>
+  </div>
+</div>
+
+<nav>
+  <button type="button" class="nav-btn active" onclick="switchTab('expense', this)">
+    <span class="nav-icon">💴</span>記帳額度
+  </button>
+  <button type="button" class="nav-btn" onclick="switchTab('records', this)">
+    <span class="nav-icon">🧾</span>記帳紀錄
+  </button>
+  <button type="button" class="nav-btn" onclick="switchTab('info', this)">
+    <span class="nav-icon">🎫</span>重要資料
+  </button>
+  <button type="button" class="nav-btn" onclick="switchTab('places', this)">
+    <span class="nav-icon">📍</span>行程店家
+  </button>
+  <button type="button" class="nav-btn" onclick="switchTab('coupons', this)">
+    <span class="nav-icon">🏷️</span>優惠券
+  </button>
+</nav>
+
+<script>
+  const STORAGE_KEY = 'okinawa_trip_2026_v3';
+  // 吉鶴卡加碼回饋池合併計算：上限 600 元
+  const JIHE_BONUS_CAP = 600;
+
+  const DEFAULT_PLACES = [
+    { id: 'p1', day: 'Day 1', name: '那霸歌町大和ROYNET酒店 (Check-in / 寄放行李)', map: 'https://www.google.com/maps/search/?api=1&query=Daiwa+Roynet+Hotel+Naha+Omoromachi', note: '11/28-11/29 住宿', done: false },
+    { id: 'p2', day: 'Day 1', name: '牛角 国際通り店 (18:30 預約)', map: 'https://www.google.com/maps/search/?api=1&query=沖縄県那覇市久茂地３丁目２－２３', note: '已訂位 2 名｜久茂地3丁目2-23', done: false },
+    { id: 'p3', day: 'Day 2', name: '那霸歌町大和Roynet PREMIER酒店 (換飯店)', map: 'https://www.google.com/maps/search/?api=1&query=Daiwa+Roynet+Hotel+Naha+Omoromachi+Premier', note: '11/29-12/01 住宿', done: false }
+  ];
+
+  let state = loadState();
+  let currentPay = 'jihe';
+  let jiheOpts = { applePay: true, hotStore: false };
+  let currentRecordDay = 'ALL';
+  let currentPlaceFilter = 'ALL';
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return {
+      baseRate: 0.215,
+      dawhoInitialSpent: 3500,
+      expenses: [],
+      places: DEFAULT_PLACES,
+      coupons: []
+    };
+  }
+
+  function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function switchTab(tabId, btn) {
+    document.querySelectorAll('.tab-panel').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + tabId).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function changeBaseRate() {
+    const val = prompt('設定基準匯率（1 日幣 = 多少台幣）：', state.baseRate);
+    const num = parseFloat(val);
+    if (!isNaN(num) && num > 0) {
+      state.baseRate = num;
+      saveState();
+      updateHeaderRate();
+      updateLivePreview();
+    }
+  }
+
+  function updateHeaderRate() {
+    document.getElementById('baseRateBtn').textContent = `基準匯率 ${state.baseRate}`;
+  }
+
+  function selectPay(pay) {
+    currentPay = pay;
+    document.querySelectorAll('.pay-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.pay === pay);
+    });
+    document.getElementById('jiheToggles').classList.toggle('show', pay === 'jihe');
+    updateLivePreview();
+  }
+
+  function toggleJiheOpt(opt) {
+    jiheOpts[opt] = !jiheOpts[opt];
+    document.getElementById('toggleApplePay').classList.toggle('active', jiheOpts.applePay);
+    document.getElementById('toggleApplePay').textContent = (jiheOpts.applePay ? '✓ ' : '+ ') + 'Apple Pay (+1.5%)';
+    document.getElementById('toggleHotStore').classList.toggle('active', jiheOpts.hotStore);
+    document.getElementById('toggleHotStore').textContent = (jiheOpts.hotStore ? '✓ ' : '+ ') + '熱門/超商 (+3%)';
+    updateLivePreview();
+  }
+
+  function parseAmountInput(valStr) {
+    if (valStr === '' || valStr === null || valStr === undefined) return null;
+    const n = parseFloat(valStr);
+    return isNaN(n) || n < 0 ? null : n;
+  }
+
+  function resolvePair(jpyIn, twdIn, baseRate) {
+    let jpy = jpyIn;
+    let twd = twdIn;
+    let rate = baseRate;
+
+    if (jpy !== null && twd !== null) {
+      rate = jpy > 0 ? +(twd / jpy).toFixed(4) : baseRate;
+    } else if (jpy !== null && twd === null) {
+      twd = Math.round(jpy * baseRate);
+    } else if (twd !== null && jpy === null) {
+      jpy = Math.round(twd / baseRate);
+    } else {
+      jpy = 0;
+      twd = 0;
+    }
+    return { jpy, twd, rate };
+  }
+
+  function computeCardMetrics(expenses, dawhoInitialSpent) {
+    let jiheTotal = 0;
+    let jiheBonusEarned = 0;
+    let dbsTotal = 0;
+    let dawhoTrip = 0;
+    let taishinTotal = 0;
+    let cashJpy = 0, cashTwd = 0;
+
+    expenses.forEach(tx => {
+      if (tx.pay === 'jihe') {
+        jiheTotal += tx.twd;
+        let bonusRate = 0;
+        if (tx.applePay) bonusRate += 0.015;
+        if (tx.hotStore) bonusRate += 0.03;
+        const rawBonus = tx.twd * bonusRate;
+        const remBonusPool = Math.max(0, JIHE_BONUS_CAP - jiheBonusEarned);
+        const actualBonus = Math.min(rawBonus, remBonusPool);
+        jiheBonusEarned += actualBonus;
+        tx._calcReward = Math.round(tx.twd * 0.025 + actualBonus);
+      } else if (tx.pay === 'dbs') {
+        const remCap = Math.max(0, 15000 - dbsTotal);
+        const bonusElig = Math.min(tx.twd, remCap);
+        tx._calcReward = Math.round(tx.twd * 0.01 + bonusElig * 0.04);
+        dbsTotal += tx.twd;
+      } else if (tx.pay === 'dawho') {
+        const currentDawhoTotal = dawhoInitialSpent + dawhoTrip;
+        const remCap = Math.max(0, 16000 - currentDawhoTotal);
+        const bonusElig = Math.min(tx.twd, remCap);
+        tx._calcReward = Math.round(tx.twd * 0.02 + bonusElig * 0.025);
+        dawhoTrip += tx.twd;
+      } else if (tx.pay === 'taishin') {
+        tx._calcReward = Math.round(tx.twd * 0.033);
+        taishinTotal += tx.twd;
+      } else {
+        tx._calcReward = 0;
+        cashJpy += tx.jpy;
+        cashTwd += tx.twd;
+      }
+    });
+
+    const jiheBonusRem = Math.max(0, JIHE_BONUS_CAP - jiheBonusEarned);
+    return {
+      jiheTotal,
+      jiheBonusEarned: Math.round(jiheBonusEarned),
+      jiheBonusRem: Math.round(jiheBonusRem),
+      dbsTotal,
+      dbsRem: Math.max(0, 15000 - dbsTotal),
+      dawhoTotal: dawhoInitialSpent + dawhoTrip,
+      dawhoTrip,
+      dawhoRem: Math.max(0, 16000 - (dawhoInitialSpent + dawhoTrip)),
+      taishinTotal,
+      cashJpy,
+      cashTwd
+    };
+  }
+
+  function updateLivePreview() {
+    const jpyIn = parseAmountInput(document.getElementById('inputJpy').value);
+    const twdIn = parseAmountInput(document.getElementById('inputTwd').value);
+    const { jpy, twd, rate } = resolvePair(jpyIn, twdIn, state.baseRate);
+
+    const simList = [...state.expenses, {
+      pay: currentPay,
+      applePay: currentPay === 'jihe' ? jiheOpts.applePay : false,
+      hotStore: currentPay === 'jihe' ? jiheOpts.hotStore : false,
+      jpy,
+      twd
+    }];
+    computeCardMetrics(simList, state.dawhoInitialSpent);
+    const rew = simList[simList.length - 1]._calcReward || 0;
+
+    const rateDisplay = (jpyIn !== null && twdIn !== null && jpy > 0) ? rate : state.baseRate;
+    document.getElementById('livePreview').innerHTML = `
+      <span>匯率：<strong>${rateDisplay}</strong>（¥${jpy.toLocaleString()} / NT$${twd.toLocaleString()}）</span>
+      <span>預估回饋：<strong style="color:var(--success)">NT$ ${rew.toLocaleString()}</strong></span>
+    `;
+  }
+
+  function addExpense() {
+    const jpyIn = parseAmountInput(document.getElementById('inputJpy').value);
+    const twdIn = parseAmountInput(document.getElementById('inputTwd').value);
+    if (jpyIn === null && twdIn === null) {
+      alert('請輸入日幣或台幣金額（可填 0）');
+      return;
+    }
+    const { jpy, twd, rate } = resolvePair(jpyIn, twdIn, state.baseRate);
+    const day = document.getElementById('inputDay').value;
+    const note = document.getElementById('inputNote').value.trim();
+
+    state.expenses.push({
+      id: Date.now().toString(),
+      day,
+      time: new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' }),
+      pay: currentPay,
+      applePay: currentPay === 'jihe' ? jiheOpts.applePay : false,
+      hotStore: currentPay === 'jihe' ? jiheOpts.hotStore : false,
+      jpy,
+      twd,
+      rate,
+      note
+    });
+
+    saveState();
+    document.getElementById('inputJpy').value = '';
+    document.getElementById('inputTwd').value = '';
+    document.getElementById('inputNote').value = '';
+    renderAll();
+  }
+
+  function openEditModal(id) {
+    const tx = state.expenses.find(x => x.id === id);
+    if (!tx) return;
+    document.getElementById('editId').value = tx.id;
+    document.getElementById('editDay').value = tx.day || 'Day 1';
+    document.getElementById('editPay').value = tx.pay;
+    document.getElementById('editJpy').value = tx.jpy;
+    document.getElementById('editTwd').value = tx.twd;
+    document.getElementById('editNote').value = tx.note || '';
+    document.getElementById('editAp').checked = !!tx.applePay;
+    document.getElementById('editHot').checked = !!tx.hotStore;
+    document.getElementById('editModal').classList.add('open');
+  }
+
+  function closeEditModal() {
+    document.getElementById('editModal').classList.remove('open');
+  }
+
+  function saveEditExpense() {
+    const id = document.getElementById('editId').value;
+    const tx = state.expenses.find(x => x.id === id);
+    if (!tx) return;
+
+    const jpyIn = parseAmountInput(document.getElementById('editJpy').value);
+    const twdIn = parseAmountInput(document.getElementById('editTwd').value);
+    const { jpy, twd, rate } = resolvePair(jpyIn, twdIn, state.baseRate);
+
+    tx.day = document.getElementById('editDay').value;
+    tx.pay = document.getElementById('editPay').value;
+    tx.jpy = jpy;
+    tx.twd = twd;
+    tx.rate = rate;
+    tx.note = document.getElementById('editNote').value.trim();
+    tx.applePay = tx.pay === 'jihe' ? document.getElementById('editAp').checked : false;
+    tx.hotStore = tx.pay === 'jihe' ? document.getElementById('editHot').checked : false;
+
+    saveState();
+    closeEditModal();
+    renderAll();
+  }
+
+  function deleteExpense(id) {
+    if (!confirm('確定刪除這筆紀錄？')) return;
+    state.expenses = state.expenses.filter(x => x.id !== id);
+    saveState();
+    renderAll();
+  }
+
+  function editDawhoOffset() {
+    const val = prompt('設定永豐大戶卡「出發前本週期已刷台幣金額」：', state.dawhoInitialSpent);
+    const num = parseFloat(val);
+    if (!isNaN(num) && num >= 0) {
+      state.dawhoInitialSpent = num;
+      saveState();
+      renderAll();
+    }
+  }
+
+  function renderQuotas() {
+    const m = computeCardMetrics(state.expenses, state.dawhoInitialSpent);
+    const jiheBonusPct = Math.min(100, Math.round((m.jiheBonusEarned / JIHE_BONUS_CAP) * 100));
+    const dbsPct = Math.min(100, Math.round((m.dbsTotal / 15000) * 100));
+    const dawhoPct = Math.min(100, Math.round((m.dawhoTotal / 16000) * 100));
+
+    const barCls = (pct) => pct >= 100 ? 'full' : (pct >= 80 ? 'warn' : '');
+
+    document.getElementById('quotaList').innerHTML = `
+      <div class="quota-item">
+        <div class="quota-header">
+          <span>吉鶴卡｜加碼回饋池（上限 600 元）</span>
+          <span style="color:${m.jiheBonusRem === 0 ? 'var(--danger)' : 'var(--primary)'}">加碼尚可拿 $${m.jiheBonusRem.toLocaleString()}</span>
+        </div>
+        <div class="quota-sub">
+          <span>加碼已拿 $${m.jiheBonusEarned.toLocaleString()} / 600 元</span>
+          <span>吉鶴已刷 NT$ ${m.jiheTotal.toLocaleString()}</span>
+        </div>
+        <div class="bar-bg"><div class="bar-fill ${barCls(jiheBonusPct)}" style="width:${jiheBonusPct}%"></div></div>
+      </div>
+
+      <div class="quota-item">
+        <div class="quota-header">
+          <span>星展卡｜海外 5% (1%+4%上限600點)</span>
+          <span style="color:${m.dbsRem === 0 ? 'var(--danger)' : 'var(--primary)'}">還可刷 NT$ ${m.dbsRem.toLocaleString()}</span>
+        </div>
+        <div class="quota-sub">
+          <span>已刷 NT$ ${m.dbsTotal.toLocaleString()} / 15,000</span>
+          <span>超過後降為 1%</span>
+        </div>
+        <div class="bar-bg"><div class="bar-fill ${barCls(dbsPct)}" style="width:${dbsPct}%"></div></div>
+      </div>
+
+      <div class="quota-item">
+        <div class="quota-header">
+          <span>永豐大戶｜海外 4.5% (2%+2.5%上限400)</span>
+          <span style="color:${m.dawhoRem === 0 ? 'var(--danger)' : 'var(--primary)'}">還可刷 NT$ ${m.dawhoRem.toLocaleString()}</span>
+        </div>
+        <div class="quota-sub">
+          <span>已刷 NT$ ${m.dawhoTotal.toLocaleString()} / 16,000</span>
+          <span>含出發前已刷 NT$ ${state.dawhoInitialSpent.toLocaleString()}</span>
+        </div>
+        <div class="bar-bg"><div class="bar-fill ${barCls(dawhoPct)}" style="width:${dawhoPct}%"></div></div>
+      </div>
+
+      <div class="quota-item">
+        <div class="quota-header">
+          <span>台新太陽卡 (玩旅刷 3.3% 無上限)</span>
+          <span>已刷 NT$ ${m.taishinTotal.toLocaleString()}</span>
+        </div>
+        <div class="quota-sub">
+          <span>現金支出：¥ ${m.cashJpy.toLocaleString()} (約 NT$ ${m.cashTwd.toLocaleString()})</span>
+          <span>無上限主力</span>
+        </div>
+      </div>
+    `;
+  }
+
+  const PAY_NAMES = {
+    jihe: '吉鶴卡',
+    dbs: '星展卡',
+    dawho: '永豐大戶',
+    taishin: '台新太陽',
+    cash: '現金'
+  };
+
+  function selectRecordDay(day, btn) {
+    currentRecordDay = day;
+    document.querySelectorAll('#recordDayPills .day-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderRecords();
+  }
+
+  function renderRecords() {
+    computeCardMetrics(state.expenses, state.dawhoInitialSpent);
+    const filtered = currentRecordDay === 'ALL'
+      ? state.expenses
+      : state.expenses.filter(x => x.day === currentRecordDay);
+
+    const sumTwd = filtered.reduce((acc, x) => acc + x.twd, 0);
+    const sumJpy = filtered.reduce((acc, x) => acc + x.jpy, 0);
+    const sumRew = filtered.reduce((acc, x) => acc + (x._calcReward || 0), 0);
+
+    const labelMap = {
+      'ALL': '四天總花費',
+      'Day 1': 'Day 1 (11/28) 花費',
+      'Day 2': 'Day 2 (11/29) 花費',
+      'Day 3': 'Day 3 (11/30) 花費',
+      'Day 4': 'Day 4 (12/01) 花費'
+    };
+
+    document.getElementById('recordSummary').innerHTML = `
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--primary);">${labelMap[currentRecordDay]}</div>
+        <div class="summary-big">NT$ ${sumTwd.toLocaleString()}</div>
+      </div>
+      <div class="summary-sub">
+        <div>日幣合計：¥ ${sumJpy.toLocaleString()}</div>
+        <div style="color:var(--success);font-weight:600;">預估回饋：NT$ ${sumRew.toLocaleString()}</div>
+      </div>
+    `;
+
+    document.getElementById('recordListTitle').textContent = currentRecordDay === 'ALL' ? '全部消費明細' : `${currentRecordDay} 消費明細`;
+    document.getElementById('recordCountLabel').textContent = `${filtered.length} 筆`;
+
+    if (filtered.length === 0) {
+      document.getElementById('txList').innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:14px 0;">這個區間尚無紀錄</div>';
+      return;
+    }
+
+    document.getElementById('txList').innerHTML = [...filtered].reverse().map(tx => {
+      let tags = PAY_NAMES[tx.pay];
+      if (tx.pay === 'jihe') {
+        const opts = [];
+        if (tx.applePay) opts.push('AP');
+        if (tx.hotStore) opts.push('熱門');
+        if (opts.length) tags += '・' + opts.join('+');
+      }
+      const rew = tx._calcReward || 0;
+      return `
+        <div class="tx-item">
+          <div class="tx-main">
+            <div class="tx-title">${tx.note || (tags + (tx.twd === 0 && tx.jpy === 0 ? '（0元紀錄）' : ''))}</div>
+            <div class="tx-meta">${tx.day || 'Day 1'} ${tx.time}｜${tags}｜¥${tx.jpy.toLocaleString()} (匯率 ${tx.rate})</div>
+          </div>
+          <div class="tx-right">
+            <div class="tx-twd">NT$ ${tx.twd.toLocaleString()}</div>
+            ${rew > 0 ? `<div class="tx-rew">+回饋 $${rew}</div>` : ''}
+          </div>
+          <button type="button" class="icon-btn" onclick="openEditModal('${tx.id}')">編輯</button>
+          <button type="button" class="icon-btn del-btn" onclick="deleteExpense('${tx.id}')">✕</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  /* Places */
+  function addPlace() {
+    const day = document.getElementById('placeDay').value;
+    const name = document.getElementById('placeName').value.trim();
+    const mapInput = document.getElementById('placeMap').value.trim();
+    const note = document.getElementById('placeNote').value.trim();
+    if (!name) { alert('請輸入店家或地點名稱'); return; }
+
+    let mapUrl = '';
+    if (mapInput.startsWith('http://') || mapInput.startsWith('https://')) {
+      mapUrl = mapInput;
+    } else {
+      mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapInput || ('沖繩 ' + name))}`;
+    }
+
+    state.places.push({ id: 'p_' + Date.now(), day, name, map: mapUrl, note, done: false });
+    saveState();
+    document.getElementById('placeName').value = '';
+    document.getElementById('placeMap').value = '';
+    document.getElementById('placeNote').value = '';
+    renderPlaces();
+  }
+
+  function togglePlaceDone(id) {
+    const p = state.places.find(x => x.id === id);
+    if (p) { p.done = !p.done; saveState(); renderPlaces(); }
+  }
+
+  function deletePlace(id) {
+    if (!confirm('刪除這個地點？')) return;
+    state.places = state.places.filter(x => x.id !== id);
+    saveState();
+    renderPlaces();
+  }
+
+  function filterPlaces(day, btn) {
+    currentPlaceFilter = day;
+    document.querySelectorAll('#dayFilterPills .day-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderPlaces();
+  }
+
+  function renderPlaces() {
+    const list = currentPlaceFilter === 'ALL' ? state.places : state.places.filter(p => p.day === currentPlaceFilter);
+    if (list.length === 0) {
+      document.getElementById('placeList').innerHTML = '<div class="card" style="text-align:center;color:var(--muted);font-size:13px;">這個分類目前沒有店家</div>';
+      return;
+    }
+    document.getElementById('placeList').innerHTML = list.map(p => `
+      <div class="place-card ${p.done ? 'done' : ''}">
+        <input type="checkbox" class="place-check" ${p.done ? 'checked' : ''} onchange="togglePlaceDone('${p.id}')" />
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:11px;font-weight:700;color:var(--primary);">${p.day}</div>
+          <div style="font-size:15px;font-weight:700;margin:2px 0;">${p.name}</div>
+          ${p.note ? `<div style="font-size:12px;color:var(--muted);">${p.note}</div>` : ''}
+          <div style="margin-top:8px;">
+            <a class="mini-btn" href="${p.map}" target="_blank">📍 開啟 Google Maps</a>
+          </div>
+        </div>
+        <button type="button" class="icon-btn del-btn" onclick="deletePlace('${p.id}')">✕</button>
+      </div>
+    `).join('');
+  }
+
+  /* Coupons */
+  function addCoupon() {
+    const name = document.getElementById('couponName').value.trim();
+    let url = document.getElementById('couponUrl').value.trim();
+    if (!name || !url) { alert('請輸入優惠券名稱與網址'); return; }
+    if (!url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
+    state.coupons.push({ id: 'c_' + Date.now(), name, url });
+    saveState();
+    document.getElementById('couponName').value = '';
+    document.getElementById('couponUrl').value = '';
+    renderCoupons();
+  }
+
+  function deleteCoupon(id) {
+    if (!confirm('刪除此優惠券？')) return;
+    state.coupons = state.coupons.filter(x => x.id !== id);
+    saveState();
+    renderCoupons();
+  }
+
+  function renderCoupons() {
+    if (state.coupons.length === 0) {
+      document.getElementById('couponList').innerHTML = '<div class="card" style="text-align:center;color:var(--muted);font-size:13px;">尚未新增優惠券，從上方貼上網址即可建立快捷按鈕</div>';
+      return;
+    }
+    document.getElementById('couponList').innerHTML = state.coupons.map(c => `
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+        <a class="coupon-btn" style="flex:1;margin-bottom:0;" href="${c.url}" target="_blank">
+          <span>🏷️ ${c.name}</span>
+          <span style="color:var(--primary);font-size:13px;">開啟 ↗</span>
+        </a>
+        <button type="button" class="icon-btn del-btn" onclick="deleteCoupon('${c.id}')">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function copyText(txt) {
+    navigator.clipboard.writeText(txt).then(() => alert('已複製：' + txt));
+  }
+
+  function exportBackup() {
+    navigator.clipboard.writeText(JSON.stringify(state)).then(() => alert('已複製全部備份碼！'));
+  }
+
+  function importBackup() {
+    const code = prompt('請貼上備份碼：');
+    if (!code) return;
+    try {
+      const parsed = JSON.parse(code);
+      if (parsed && Array.isArray(parsed.expenses)) {
+        state = parsed;
+        saveState();
+        renderAll();
+        alert('匯入成功！');
+      }
+    } catch (e) { alert('備份碼格式不正確'); }
+  }
+
+  function renderAll() {
+    updateHeaderRate();
+    updateLivePreview();
+    renderQuotas();
+    renderRecords();
+    renderPlaces();
+    renderCoupons();
+  }
+
+  renderAll();
+</script>
+</body>
+</html>
