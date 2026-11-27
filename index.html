@@ -146,17 +146,19 @@
       color: var(--muted);
       margin-bottom: 4px;
     }
-    .field input, .field select {
+    .field input, .field select, .field textarea {
       width: 100%;
       padding: 10px 12px;
       border: 1.5px solid var(--border);
       border-radius: 10px;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       background: #fff;
       color: var(--text);
+      font-family: inherit;
     }
-    .field input:focus, .field select:focus {
+    .field textarea { font-size: 13px; font-weight: 500; min-height: 68px; }
+    .field input:focus, .field select:focus, .field textarea:focus {
       outline: none;
       border-color: var(--primary);
     }
@@ -479,7 +481,7 @@
     </div>
   </section>
 
-  <!-- TAB 2: 記帳紀錄（四天總計 + 分日切換 + 可編輯） -->
+  <!-- TAB 2: 記帳紀錄 -->
   <section id="tab-records" class="tab-panel">
     <div class="day-pills" id="recordDayPills">
       <button type="button" class="day-pill active" onclick="selectRecordDay('ALL', this)">四天總計</button>
@@ -500,61 +502,32 @@
     </div>
   </section>
 
-  <!-- TAB 3: 重要資料 -->
+  <!-- TAB 3: 重要資料（可自行新增、複製、開啟地圖） -->
   <section id="tab-info" class="tab-panel">
     <div class="card">
-      <span class="badge">去程航班｜Day 1（11/28 週六）</span>
-      <div style="font-size:16px;font-weight:700;">星宇航空 Starlux JX870（A350-900）</div>
-      <div style="font-size:14px;margin-top:6px;">
-        <strong>11:40</strong> 臺灣桃園機場 (TPE) <strong>第 1 航廈</strong><br/>
-        ↓ 飛行 1 小時 35 分（直飛）<br/>
-        <strong>14:15</strong> 那霸國際機場 (OKA) <strong>國際航廈</strong>
+      <div class="section-title">新增重要資料（航班、住宿、憑證）</div>
+      <div class="input-row">
+        <div class="field">
+          <label>分類標籤</label>
+          <input type="text" id="infoTag" placeholder="例如：航班、住宿、預約" />
+        </div>
+        <div class="field">
+          <label>標題 *</label>
+          <input type="text" id="infoTitle" placeholder="例如：星宇 JX870 / 飯店名" />
+        </div>
       </div>
+      <div class="field" style="margin-bottom:8px;">
+        <label>詳細內容（時間、地址、代號等）</label>
+        <textarea id="infoBody" placeholder="輸入時間、地址或備註"></textarea>
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Google Maps 或相關連結（選填）</label>
+        <input type="text" id="infoMap" placeholder="貼上地圖網址或地址" />
+      </div>
+      <button type="button" class="btn-primary" onclick="addInfoItem()">＋ 加入重要資料</button>
     </div>
 
-    <div class="card">
-      <span class="badge">回程航班｜Day 4（12/01 週二）</span>
-      <div style="font-size:16px;font-weight:700;">星宇航空 Starlux JX871（A350-900）</div>
-      <div style="font-size:14px;margin-top:6px;">
-        <strong>15:25</strong> 那霸國際機場 (OKA) <strong>國際航廈</strong><br/>
-        ↓ 飛行 1 小時 45 分（直飛）<br/>
-        <strong>16:10</strong> 臺灣桃園機場 (TPE) <strong>第 1 航廈</strong>
-      </div>
-    </div>
-
-    <div class="card">
-      <span class="badge">晚餐訂位｜11/28（六）18:30</span>
-      <div style="font-size:16px;font-weight:700;">牛角 国際通り店（2 名様｜僅訂位）</div>
-      <div style="font-size:13px;color:var(--muted);margin-top:4px;">
-        住所：沖縄県那覇市久茂地３丁目 ２－２３<br/>
-        電話：098-864-0141
-      </div>
-      <div class="info-row">
-        <button type="button" class="mini-btn" onclick="copyText('沖縄県那覇市久茂地３丁目２－２３')">📋 複製地址</button>
-       
-        <a class="mini-btn" href="https://www.google.com/maps/search/?api=1&query=沖縄県那覇市久茂地３丁目２－２３" target="_blank">📍 地圖</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <span class="badge">住宿 1｜11/28（六）－ 11/29（日）1 晚</span>
-      <div style="font-size:15px;font-weight:700;">那霸歌町大和ROYNET酒店</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:2px;">Daiwa Roynet Hotel Naha Omoromachi</div>
-      <div class="info-row">
-        <button type="button" class="mini-btn" onclick="copyText('Daiwa Roynet Hotel Naha Omoromachi')">📋 複製英文名</button>
-        <a class="mini-btn" href="https://www.google.com/maps/search/?api=1&query=Daiwa+Roynet+Hotel+Naha+Omoromachi" target="_blank">📍 Google Maps</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <span class="badge">住宿 2｜11/29（日）－ 12/01（二）2 晚</span>
-      <div style="font-size:15px;font-weight:700;">那霸歌町大和Roynet PREMIER酒店</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:2px;">Daiwa Roynet Hotel Naha-Omoromachi Premier</div>
-      <div class="info-row">
-        <button type="button" class="mini-btn" onclick="copyText('Daiwa Roynet Hotel Naha-Omoromachi Premier')">📋 複製英文名</button>
-        <a class="mini-btn" href="https://www.google.com/maps/search/?api=1&query=Daiwa+Roynet+Hotel+Naha+Omoromachi+Premier" target="_blank">📍 Google Maps</a>
-      </div>
-    </div>
+    <div id="infoList"></div>
   </section>
 
   <!-- TAB 4: 行程與想去店家 -->
@@ -600,7 +573,7 @@
     <div id="placeList"></div>
   </section>
 
-  <!-- TAB 5: 優惠券 -->
+  <!-- TAB 5: 優惠券＋備份碼匯入匯出 -->
   <section id="tab-coupons" class="tab-panel">
     <div class="card">
       <div class="section-title">新增優惠券網址</div>
@@ -618,10 +591,10 @@
     <div id="couponList"></div>
 
     <div class="card" style="margin-top:16px;">
-      <div class="section-title">資料備份</div>
+      <div class="section-title">備份碼匯入 / 匯出</div>
       <div style="display:flex;gap:8px;">
         <button type="button" class="mini-btn" style="flex:1;justify-content:center;" onclick="exportBackup()">📤 複製全部備份碼</button>
-        <button type="button" class="mini-btn" style="flex:1;justify-content:center;" onclick="importBackup()">📥 匯入備份碼</button>
+        <button type="button" class="mini-btn" style="flex:1;justify-content:center;" onclick="importBackup()">📥 貼上備份碼匯入</button>
       </div>
     </div>
   </section>
@@ -700,15 +673,8 @@
 </nav>
 
 <script>
-  const STORAGE_KEY = 'okinawa_trip_2026_v3';
-  // 吉鶴卡加碼回饋池合併計算：上限 600 元
+  const STORAGE_KEY = 'okinawa_trip_2026_v4';
   const JIHE_BONUS_CAP = 600;
-
-  const DEFAULT_PLACES = [
-    { id: 'p1', day: 'Day 1', name: '那霸歌町大和ROYNET酒店 (Check-in / 寄放行李)', map: 'https://www.google.com/maps/search/?api=1&query=Daiwa+Roynet+Hotel+Naha+Omoromachi', note: '11/28-11/29 住宿', done: false },
-    { id: 'p2', day: 'Day 1', name: '牛角 国際通り店 (18:30 預約)', map: 'https://www.google.com/maps/search/?api=1&query=沖縄県那覇市久茂地３丁目２－２３', note: '已訂位 2 名｜久茂地3丁目2-23', done: false },
-    { id: 'p3', day: 'Day 2', name: '那霸歌町大和Roynet PREMIER酒店 (換飯店)', map: 'https://www.google.com/maps/search/?api=1&query=Daiwa+Roynet+Hotel+Naha+Omoromachi+Premier', note: '11/29-12/01 住宿', done: false }
-  ];
 
   let state = loadState();
   let currentPay = 'jihe';
@@ -719,13 +685,24 @@
   function loadState() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        const p = JSON.parse(raw);
+        return {
+          baseRate: p.baseRate || 0.215,
+          dawhoInitialSpent: typeof p.dawhoInitialSpent === 'number' ? p.dawhoInitialSpent : 3500,
+          expenses: Array.isArray(p.expenses) ? p.expenses : [],
+          infos: Array.isArray(p.infos) ? p.infos : [],
+          places: Array.isArray(p.places) ? p.places : [],
+          coupons: Array.isArray(p.coupons) ? p.coupons : []
+        };
+      }
     } catch (e) {}
     return {
       baseRate: 0.215,
       dawhoInitialSpent: 3500,
       expenses: [],
-      places: DEFAULT_PLACES,
+      infos: [],
+      places: [],
       coupons: []
     };
   }
@@ -970,7 +947,6 @@
     const jiheBonusPct = Math.min(100, Math.round((m.jiheBonusEarned / JIHE_BONUS_CAP) * 100));
     const dbsPct = Math.min(100, Math.round((m.dbsTotal / 15000) * 100));
     const dawhoPct = Math.min(100, Math.round((m.dawhoTotal / 16000) * 100));
-
     const barCls = (pct) => pct >= 100 ? 'full' : (pct >= 80 ? 'warn' : '');
 
     document.getElementById('quotaList').innerHTML = `
@@ -1101,6 +1077,58 @@
     }).join('');
   }
 
+  /* Important Info */
+  function addInfoItem() {
+    const tag = document.getElementById('infoTag').value.trim() || '重要資料';
+    const title = document.getElementById('infoTitle').value.trim();
+    const body = document.getElementById('infoBody').value.trim();
+    const mapRaw = document.getElementById('infoMap').value.trim();
+    if (!title) { alert('請輸入標題'); return; }
+
+    let mapUrl = '';
+    if (mapRaw) {
+      mapUrl = (mapRaw.startsWith('http://') || mapRaw.startsWith('https://'))
+        ? mapRaw
+        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapRaw)}`;
+    }
+
+    state.infos.push({ id: 'i_' + Date.now(), tag, title, body, map: mapUrl });
+    saveState();
+    document.getElementById('infoTag').value = '';
+    document.getElementById('infoTitle').value = '';
+    document.getElementById('infoBody').value = '';
+    document.getElementById('infoMap').value = '';
+    renderInfos();
+  }
+
+  function deleteInfoItem(id) {
+    if (!confirm('刪除這筆重要資料？')) return;
+    state.infos = state.infos.filter(x => x.id !== id);
+    saveState();
+    renderInfos();
+  }
+
+  function renderInfos() {
+    if (state.infos.length === 0) {
+      document.getElementById('infoList').innerHTML = '<div class="card" style="text-align:center;color:var(--muted);font-size:13px;">尚未新增重要資料，可在上方新增或匯入備份碼</div>';
+      return;
+    }
+    document.getElementById('infoList').innerHTML = state.infos.map(it => `
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span class="badge">${it.tag}</span>
+          <button type="button" class="icon-btn del-btn" onclick="deleteInfoItem('${it.id}')">✕</button>
+        </div>
+        <div style="font-size:16px;font-weight:700;">${it.title}</div>
+        ${it.body ? `<div style="font-size:13px;color:var(--text);margin-top:6px;white-space:pre-line;">${it.body}</div>` : ''}
+        <div class="info-row">
+          <button type="button" class="mini-btn" onclick="copyText(${JSON.stringify(it.title + (it.body ? '\n' + it.body : ''))})">📋 複製內容</button>
+          ${it.map ? `<a class="mini-btn" href="${it.map}" target="_blank">📍 開啟連結 / 地圖</a>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
   /* Places */
   function addPlace() {
     const day = document.getElementById('placeDay').value;
@@ -1202,7 +1230,7 @@
   }
 
   function copyText(txt) {
-    navigator.clipboard.writeText(txt).then(() => alert('已複製：' + txt));
+    navigator.clipboard.writeText(txt).then(() => alert('已複製內容'));
   }
 
   function exportBackup() {
@@ -1215,12 +1243,21 @@
     try {
       const parsed = JSON.parse(code);
       if (parsed && Array.isArray(parsed.expenses)) {
-        state = parsed;
+        state = {
+          baseRate: parsed.baseRate || 0.215,
+          dawhoInitialSpent: typeof parsed.dawhoInitialSpent === 'number' ? parsed.dawhoInitialSpent : 3500,
+          expenses: parsed.expenses || [],
+          infos: parsed.infos || [],
+          places: parsed.places || [],
+          coupons: parsed.coupons || []
+        };
         saveState();
         renderAll();
-        alert('匯入成功！');
+        alert('備份碼匯入成功！');
+      } else {
+        alert('備份碼格式不正確');
       }
-    } catch (e) { alert('備份碼格式不正確'); }
+    } catch (e) { alert('備份碼解析失敗'); }
   }
 
   function renderAll() {
@@ -1228,6 +1265,7 @@
     updateLivePreview();
     renderQuotas();
     renderRecords();
+    renderInfos();
     renderPlaces();
     renderCoupons();
   }
